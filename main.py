@@ -8,7 +8,9 @@ def main():
     category.write_json(data=category_links)
     for category_link in category_links:
         product_data = product.get_product_data(category_link['link'])
-        product.write_product_json(product_data, category_link['title'])
+        file_name = category_link['title'].replace('/', '')
+        product.write_product_json(product_data, file_name)
+        print(f"{file_name} pars completed")
 
 
 if __name__ == '__main__':

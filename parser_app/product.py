@@ -25,17 +25,23 @@ def get_product_data(url):
     product_container = driver.find_element(By.CLASS_NAME, value='virtual-scroll__container')
     data = []
     products = product_container.find_elements(By.CLASS_NAME, value='AdTileHorizontal')
+
     for product in products:
+        link_bloc = product.find_element(By.CLASS_NAME, value='AdTileHorizontalTitle')
+        link = link_bloc.get_attribute('href')
         data.append({
             'text': product.text,
-            'link': product.get_attribute('href')
+            'link': link
         })
+
     while True:
         product_container = driver.find_element(By.CLASS_NAME, value='virtual-scroll__container')
         for product in products:
+            link_bloc = product.find_element(By.CLASS_NAME, value='AdTileHorizontalTitle')
+            link = link_bloc.get_attribute('href')
             data.append({
                 'text': product.text,
-                'link': product.get_attribute('href')
+                'link': link
             })
 
         ActionChains(driver).scroll_to_element(products[-1]).perform()
