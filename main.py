@@ -1,3 +1,5 @@
+from multiprocessing import Pool
+
 from parser_app import category, product
 
 URL = 'https://lalafo.kg/sitemap'
@@ -5,12 +7,10 @@ URL = 'https://lalafo.kg/sitemap'
 
 def main():
     category_links = category.get_category_links(url=URL)
-    category.write_json(data=category_links)
-    for category_link in category_links:
-        product_data = product.get_product_data(category_link['link'])
-        file_name = category_link['title'].replace('/', '')
-        product.write_product_json(product_data, file_name)
-        print(f"{file_name} pars completed")
+    links = [i['link'] for i in category_links]
+    processes = int(input('Enter amount of process: '))
+    p = Pool(processes=processes)
+    p.map(product.get_product_data, links)
 
 
 if __name__ == '__main__':

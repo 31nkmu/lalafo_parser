@@ -18,6 +18,11 @@ options.add_argument('--disable-blink-features=AutomationControlled')
 links = []
 
 
+def write_json(data):
+    with open('category_links.json', 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+
 def get_category_links(url):
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -32,14 +37,11 @@ def get_category_links(url):
             })
             if 'Бюро находок' in category.text:
                 break
+        write_json(data=links)
+
         return links
     except Exception as ex:
         return ex
     finally:
         driver.close()
         driver.quit()
-
-
-def write_json(data):
-    with open('category_links.json', 'w') as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)

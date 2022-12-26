@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 from fake_useragent import UserAgent
@@ -15,10 +16,14 @@ options.add_argument(f'user-agent={ua.chrome}')
 options.add_argument('--headless')
 options.add_argument('--disable-blink-features=AutomationControlled')
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+def write_product_json(data, file_name):
+    with open(f'media/{file_name}.json', 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
 
 
 def get_product_data(url):
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get(url)
     time.sleep(4)
 
@@ -47,13 +52,19 @@ def get_product_data(url):
         ActionChains(driver).scroll_to_element(products[-1]).perform()
         if products == product_container.find_elements(By.CLASS_NAME, value='AdTileHorizontal'):
             driver.execute_script("window.scrollBy(0, 250);")
-            time.sleep(3)
+            time.sleep(2)
+            driver.execute_script("window.scrollBy(0, 250);")
+
             if products[-1] == product_container.find_elements(By.CLASS_NAME, value='AdTileHorizontal')[-1]:
                 break
         products = product_container.find_elements(By.CLASS_NAME, value='AdTileHorizontal')
+
+    if not os.path.isdir("media"):
+        os.mkdir("media")
+
+    file_name = url.split('/')[-1]
+    write_product_json(data=data, file_name=file_name)
+
+    print(f"{file_name} pars completed")
+
     return data
-
-
-def write_product_json(data, file_name):
-    with open(f'{file_name}.json', 'w') as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
